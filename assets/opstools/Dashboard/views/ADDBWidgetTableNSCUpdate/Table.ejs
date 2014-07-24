@@ -1,0 +1,67 @@
+<table id="table-<%= id %>" class="display sDashboardTableView widget-<%= id %>" cellspacing="0" width="100%" style="clear:both;">
+    <thead>
+        <tr >
+<% 
+    fields.forEach(function(field){
+%>            <th><%= field %></th>
+<%
+    });
+
+    if (mode == 'notPaid') {
+%>
+            <th></th>
+<%  }  %>
+        </tr>
+    </thead>
+
+    <tfoot>
+<% 
+    fields.forEach(function(field){
+%>            <th><%= field %></th>
+<%
+    });
+
+
+    if (mode == 'notPaid') {
+%>
+             <th></th>
+
+<%  }  %>
+    </tfoot>
+
+    <tbody>
+<% 
+
+    data.forEach(function(row){
+%>
+    <tr data-row-staff-number="<%= row.staff_number %>">
+<%
+
+
+        fields.forEach(function(field){
+
+            if (row[field]) {
+
+%>            <td><%= row[field] %></td>
+<%
+            } else {
+
+%>            <td>?</td>
+<%
+            }
+        });
+
+        if (mode == 'notPaid') {
+%>
+            <td><button class="opsdashboard-nsctobepaid-paid" data-staff-number="<%= row.staff_number %>">paid</button></td>
+<%      }   %>
+
+    </tr>
+<%
+
+    });
+%>
+
+    </tbody>
+
+</table>
