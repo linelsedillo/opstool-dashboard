@@ -10,6 +10,7 @@ steal(
 
 ).then(
         '/js/sDashboard/jquery-sDashboard.js',
+        '/opstools/Dashboard/dashboard.css',
 
 //        'appdev/widgets/ad_delete_ios/ad_delete_ios.js',
 //        '/opstools/Dashboard/views/Dashboard/Dashboard.ejs',
@@ -26,6 +27,7 @@ function(){
             var self = this;
             options = AD.defaults({
                     templateDOM: '//opstools/Dashboard/views/Dashboard/Dashboard.ejs',
+                    templateMock: '//opstools/Dashboard/views/Dashboard/Mockup.ejs',
                     resize_notification: 'Dashboard.resize',
                     tool:null   // the parent opsPortal Tool() object
             }, options);
@@ -39,6 +41,10 @@ function(){
 
             this.initDOM();
 
+
+            this.element.find('.ot-dashboard-button-mockup').click(function(){
+                self.showMockup();
+            })
 
             AD.comm.hub.subscribe('opsDashboard.widget.add', function(tag, data){
                 self.addWidget(data.definition);
@@ -78,6 +84,11 @@ function(){
             console.log(allEvents);
 
 
+        },
+
+
+        showMockup:function() {
+            this.element.html(can.view(this.options.templateMock, {} ));
         },
 
 
