@@ -4,6 +4,7 @@ steal(
         'appdev',
         '/opstools/Dashboard/controllers/ADDBWidgetTable.js',
         '/opstools/Dashboard/controllers/ADDBWidgetTableNSCUpdate.js',
+        '/opstools/Dashboard/controllers/ADDBWidgetGmaGraph.js',
 //        'appdev/widgets/ad_delete_ios/ad_delete_ios.js',
 //        'opstools/Dashboard/views/WidgetList/WidgetList.ejs',
 function(){
@@ -12,7 +13,8 @@ function(){
     // define the known widgetTypes here:
     var widgetTypes = {
         'table': function() { return AD.controllers.opstools.Dashboard.ADDBWidgetTable; },
-        'tableUpdateNSC': function() { return AD.controllers.opstools.Dashboard.ADDBWidgetTableNSCUpdate; }
+        'tableUpdateNSC': function() { return AD.controllers.opstools.Dashboard.ADDBWidgetTableNSCUpdate; },
+        'gmaGraph': function() { return AD.controllers.opstools.Dashboard.ADDBWidgetGmaGraph;}
 
     }
 
@@ -92,8 +94,7 @@ console.log(err);
                         new widget(self.widgetListArea.find('.widget-id-'+definition.id), definition);
 
                     }
-                    // check the type value and choose the proper Widget
-                    var widget = AD.controllers.opstools.Dashboard.ADDBWidgetTable;
+
 
                 })
                     
