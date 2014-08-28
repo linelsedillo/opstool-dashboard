@@ -17,6 +17,7 @@
     })
     .then(
         // load our tests here
+        "opstools/Dashboard/tests/controller_ADDBWidgetGmaGraph.js",
         "opstools/Dashboard/tests/controller_ADDBWidgetTable.js",
         "opstools/Dashboard/test/controller_ADDBWidget.js",
         "opstools/Dashboard/test/controller_WidgetList.js"

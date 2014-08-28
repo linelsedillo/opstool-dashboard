@@ -1,0 +1,26 @@
+<div class="panel panel-default gmaGraph-<%= id %>">
+    <div class="navbar">
+        <div class="btn-group">
+          <button type="primary button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            Assignments<span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <% assignments.forEach(function(assignment) { %>
+                <li class="assignment-item" nodeId="<%= assignment.nodeId %>"><a href="#"><%= assignment.shortName %></a></li>
+            <% }) %>
+          </ul>
+        </div>
+        <div class="btn-group">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+          Measurements<span class="caret"></span>
+        </button>
+        <ul class="measurements-list dropdown-menu" role="menu">
+              <li>Choose Assignment.</li>          
+        </ul>
+        </div>
+        <a class="ad-item-delete btn btn-default" style="float:right" href="#">Delete</a>
+    </div>
+    <div class="panel-body">
+        <div class="well" >Content for ADDBWidgetGmaGraph</div>
+    </div>
+</div>

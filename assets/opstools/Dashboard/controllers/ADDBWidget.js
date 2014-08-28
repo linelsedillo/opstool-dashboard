@@ -43,11 +43,10 @@ function(){
 
         initDOM: function () {
             var self = this;
-
 //            this.element.html(can.view(this.options.templateDOM, {} ));
-
+            this.busyIcon = new AD.widgets.ad_icon_busy(this.element.find('.busy'));
             this.element.click(function() {
-
+                self.busyIcon.show();
                 self.refreshData()
                 .fail(function(err){
 
@@ -57,7 +56,7 @@ function(){
                     AD.comm.hub.publish('opsDashboard.widget.add', {
                         definition:data
                     });
-
+                    self.busyIcon.hide();
                     self.element.hide();
 
                 })  
