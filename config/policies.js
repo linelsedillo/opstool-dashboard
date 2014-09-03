@@ -11,6 +11,7 @@
  * http://sailsjs.org/#documentation
  */
 
+var serviceStack = [ 'sessionAuth', 'initUser' ];
 
 module.exports = {
 
@@ -27,6 +28,14 @@ module.exports = {
 //               ],
 //       logout:true
 //    }
+
+	'opstool-dashboard/OpsdashboardController' : {
+		nsctobepaid: 	serviceStack,
+		nscpaid: 	 	serviceStack,
+		nscalreadypaid: serviceStack,
+		staffaccountinfo: serviceStack
+
+	}
 
 
 };

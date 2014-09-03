@@ -34,7 +34,7 @@
 
     data.forEach(function(row){
 %>
-    <tr data-row-staff-number="<%= row.staff_number %>">
+    <tr data-row-staff-guid="<%= row.ren_guid %>">
 <%
 
 
@@ -53,7 +53,7 @@
 
         if (mode == 'notPaid') {
 %>
-            <td><button class="opsdashboard-nsctobepaid-paid" data-staff-number="<%= row.staff_number %>">paid</button></td>
+            <td><button class="opsdashboard-nsctobepaid-paid" data-staff-guid="<%= row.ren_guid %>" data-staff-account="<%= row.staff_number %>" data-staff-name="<%= row.account_name %>">paid</button></td>
 <%      }   %>
 
     </tr>

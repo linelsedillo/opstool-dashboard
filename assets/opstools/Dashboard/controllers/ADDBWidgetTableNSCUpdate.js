@@ -68,6 +68,8 @@ function(){
 
             var data = [];
 
+            // make this call using socket.get() so server can register our 
+            // socket for callbacks.
             AD.comm.socket.get({ url:this.options.config.url})
             .fail(function(err){
 console.log('Whoops!');
@@ -85,12 +87,14 @@ console.log(err);
                 var tableInstance = theTable.DataTable({id:'skippy-'+self.options.id});
 
                 theTable.find('button').click(function(atr1, atr2, atr3) {
-                    var staffNumber = $(this).attr('data-staff-number');
+                    var guid = $(this).attr('data-staff-guid');
+                    var account = $(this).attr('data-staff-account');
+                    var name = $(this).attr('data-staff-name');
 
-                    var urlPaid = self.options.config.url_paid+'/'+staffNumber;
+                    var urlPaid = self.options.config.url_paid+'/'+guid;
 
 
-                    AD.comm.socket.get({ url:urlPaid })
+                    AD.comm.socket.get({ url:urlPaid, params:{ account:account, name:name }})
                     .fail(function(err){
                         console.log(err);
 
@@ -106,45 +110,27 @@ console.log(err);
 
 
 
-                io.socket.on('nscalreadypaid', function(msg){
+                AD.comm.socket.subscribe('NSCAlreadyPaid.created', function(key, msg) {
 
 
-                    if (msg.verb == 'created') {
+                    if (self.options.mode == 'notPaid') {
 
-                        if (self.options.mode == 'notPaid') {
+                        tableInstance.row('[data-row-staff-guid="'+msg.data.ren_guid+'"]')
+                        .remove()
+                        .draw();
 
-                            tableInstance.row('[data-row-staff-number="'+msg.data.staff_account+'"]')
-                            .remove()
-                            .draw();
+                    } else {
 
-                        } else {
-console.log( 'socket msg:');
-console.log(msg);
-                            AD.comm.service.get({
-                                url:'/opsdashboard/nscstaffinfo',
-                                params:{ accounts:msg.data.staff_account }
-                            })
-                            .fail(function(err){
-                                console.log('Error requesting nscstaffinfo:');
-                                console.error(err); 
-                            })
-                            .then(function(allStaff){
-
-                                tableInstance.row.add( [
-                                    allStaff[0].staff_number,
-                                    allStaff[0].account_name
-                                ] ).draw();
-                            })
-                            
-
-                        }
-
+                        tableInstance.row.add( [
+                            msg.data.staff_account,
+                            msg.data.account_name
+                        ] ).draw();
 
                     }
 
-
-
                 })
+
+
 
                 var dataTableWrapper = theTable.parent();
 
@@ -154,38 +140,7 @@ console.log(msg);
 //                        widgetType:'table',
                     widgetContent: dataTableWrapper // theTable
                 });
-/*
 
-                if (response.length) {
-
-                    response.forEach(function(row){
-
-                        var rowData = [];
-
-                        fields.forEach(function( field){
-
-                            if( row[field] ) {
-                                rowData.push(row[field]);
-                            }
-
-                        });
-
-                        data.push(rowData);
-
-
-                    })
-
-
-                    dfd.resolve({ 
-                        widgetTitle : self.options.title, //Title of the widget
-                        widgetId: self.options.id, //unique id for the widget
-//                        widgetType:'table',
-                        widgetContent: self.element.find('.widget-'+self.options.id)
-                    });
-
-                }
-
-*/
             });
 
 

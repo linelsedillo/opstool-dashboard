@@ -9,11 +9,14 @@ module.exports = {
 
 
     connection:["mysql"],
+    // migrate:'alter',
 
 
     attributes: {
 
+    	ren_guid: { type: 'STRING' },
         staff_account : { type: 'STRING' },
+        account_name : { type: 'STRING' },
         date_paid : 'DATETIME'
     }
 };
