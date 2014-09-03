@@ -1,6 +1,6 @@
 {
   "name": "opstool-dashboard",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "(plugin) A dashboard page for our Operations Portal.",
   "main": "module.js",
   "directories": {

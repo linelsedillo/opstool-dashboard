@@ -26,9 +26,9 @@ module.exports = {
 
     'get /opsdashboard/widget': 'opstool-dashboard/OpsdashboardController.widget',
     'get /opsdashboard/nsctobepaid': 'opstool-dashboard/OpsdashboardController.nsctobepaid',
-    'get /opsdashboard/nscpaid/:account': 'opstool-dashboard/OpsdashboardController.nscpaid',
+    'get /opsdashboard/nscpaid/:guid': 'opstool-dashboard/OpsdashboardController.nscpaid',
     'get /opsdashboard/nscalreadypaid': 'opstool-dashboard/OpsdashboardController.nscalreadypaid',
-    'get /opsdashboard/nscstaffinfo': 'opstool-dashboard/OpsdashboardController.nscstaffinfo',
+    // 'get /opsdashboard/nscstaffinfo': 'opstool-dashboard/OpsdashboardController.nscstaffinfo',
     'get /opsdashboard/staffaccountinfo': 'opstool-dashboard/OpsdashboardController.staffaccountinfo'
 
 
