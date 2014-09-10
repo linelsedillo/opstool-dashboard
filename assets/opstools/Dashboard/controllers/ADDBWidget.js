@@ -29,6 +29,8 @@ function(){
 
             this.dataSource = this.options.dataSource; // AD.models.Projects;
 
+            this.inProcess = false;
+
             this.initDOM();
 
             AD.comm.hub.subscribe('opsDashboard.widget.removed', function(tag,data){
@@ -46,20 +48,32 @@ function(){
 //            this.element.html(can.view(this.options.templateDOM, {} ));
             this.busyIcon = new AD.widgets.ad_icon_busy(this.element.find('.busy'));
             this.element.click(function() {
-                self.busyIcon.show();
-                self.refreshData()
-                .fail(function(err){
 
-                })
-                .then(function(data){
+                // prevent double clicks!
+                if (self.inProcess == false) {
 
-                    AD.comm.hub.publish('opsDashboard.widget.add', {
-                        definition:data
-                    });
-                    self.busyIcon.hide();
-                    self.element.hide();
+                    self.inProcess = true;
+                    self.busyIcon.show();
+                    self.refreshData()
+                    .fail(function(err){
 
-                })  
+                        self.inProcess = false;
+                        self.busyIcon.hide();
+    // TODO: indicate an error here!  Some exclamation icon?
+
+                    })
+                    .then(function(data){
+
+                        AD.comm.hub.publish('opsDashboard.widget.add', {
+                            definition:data
+                        });
+                        self.busyIcon.hide();
+                        self.element.hide();
+                        self.inProcess = false;
+
+                    })  
+
+                }
 
             });
         },
