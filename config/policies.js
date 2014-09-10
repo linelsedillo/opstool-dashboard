@@ -33,7 +33,9 @@ module.exports = {
 		nsctobepaid: 	serviceStack,
 		nscpaid: 	 	serviceStack,
 		nscalreadypaid: serviceStack,
-		staffaccountinfo: serviceStack
+		staffaccountinfo: serviceStack,
+		gmaGraphAssignments: serviceStack,
+		gmaGraphMeasurements: serviceStack
 
 	}
 
