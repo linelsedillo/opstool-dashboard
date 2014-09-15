@@ -21,7 +21,11 @@ module.exports = {
             { id:'000002', title:'NSC: to be paid', type:'tableUpdateNSC', config:{ url:'/opsdashboard/nsctobepaid', url_paid:'/opsdashboard/nscpaid', fields:['staff_number', 'account_name']}},
             { id:'000003', title:'NSC: already paid', mode:'paid',  type:'tableUpdateNSC', config:{ url:'/opsdashboard/nscalreadypaid', fields:['staff_number', 'account_name']}},
             { id:'000004', title:'Staff account info', type:'table', config:{ url:'/opsdashboard/staffaccountinfo', fields:['item', 'value']}},
-            { id:'000005', title:'GMA Measurement graph', type:'gmaGraph', config:{ url:'/opsdashboard/gmaGraph', urlAssignments:'/opsdashboard/gmaGraph/assignments', urlMeasurements:'/opsdashboard/gmaGraph/assignment/[nodeId]/measurements' , fields:['item', 'value']}}
+            { id:'000005', title:'GMA Measurement graph', type:'gmaGraph', config:{ 
+                urlAssignments:'/opsdashboard/gmaGraph/assignments', 
+                urlMeasurements:'/opsdashboard/gmaGraph/assignment/[nodeId]/measurements', 
+                urlGraph:'/opsdashboard/gmaGraph/assignment/[nodeId]/measurements/[measurementId]/graph', 
+                fields:['item', 'value']} }
         ]);
 
 
@@ -575,6 +579,52 @@ if (sails.config.opsdashboard) {
             measurements.forEach(function(entry){
                 list.push(entry.toJSON());
             })
+
+            AD.log('... <green>comm.success()</green>');
+            AD.log(list);
+            ADCore.comm.success(res, list);
+        });
+
+
+    },
+
+
+
+    /**
+     *  @function gmaGraphData
+     *
+     *  Return the GMA historical data for the provided nodeId & measurementId.
+     *
+     *  @param  {integer} nodeId    the node id to pull measurements from.
+     *  @param  {integer} measurementId the measurement id to graph
+     *
+     *  @return {json}
+     *  {
+     *      status: 'success',
+     *      data: [
+     *          { }
+     *      ]
+     *  }
+     */
+    gmaGraphData:function(req, res){
+        AD.log();
+        AD.log('<green>gmaGraphData:</green> ');
+        // prepare response for json
+        if (res.setHeader) {
+            res.setHeader('content-type', 'application/javascript');
+        }
+
+        var nodeId = req.param('nodeId');
+        var measurementId = req.param('measurementId');
+        AD.log('... <green>nodeId:</green>'+nodeId);
+        AD.log('... <green>measurementId:</green>'+measurementId);
+
+        GMA.graphDataForRequest({ req: req, nodeId:nodeId, measurements:[measurementId] })
+        .fail(function(err){
+            AD.log.error(' encountered error from GMA.graphDataForRequest() :', err);
+            ADCore.comm.error(res, err, 500);
+        })
+        .done(function(list){
 
             AD.log('... <green>comm.success()</green>');
             AD.log(list);

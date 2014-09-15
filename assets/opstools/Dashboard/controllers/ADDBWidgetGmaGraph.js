@@ -33,6 +33,8 @@ function(){
             this.buttonMeasurements = null;
             this.measurementsBusy = null;
 
+            this.nodeId = null;
+
         },
 
         refreshData:function(){
@@ -59,12 +61,30 @@ function(){
                   self.assignmentClicked(ev,$(this));
                 });
 
+                self.textAssignments = self.widget.find('.assignment-text');
                 self.buttonMeasurements = self.widget.find('.button-measurements');
                 self.buttonMeasurements.hide();
 
                 self.measurementsBusy = new AD.widgets.ad_icon_busy(self.widget.find('.measurements-busy'));
-
+                self.graphBusy = new AD.widgets.ad_icon_busy(self.widget.find('.graph-busy')); 
                 
+
+                self.graph = self.widget.find(".gmaSparkline").wijsparkline({
+//                    data: [],
+                    bind: "value",
+                    tooltipContent: function(){
+                            return this.month + ': ' +  this.value;
+                    },
+                    type: "area",
+                    seriesStyles: [
+                        {
+                            fill: "#4381B8",
+                            stroke: "#4381B8"
+                        }
+                    ]
+                });
+
+                self.graph.hide();
                 
 
                 // tell sDashboard about the widget content
@@ -89,18 +109,22 @@ function(){
         },
 
         assignmentClicked:function(ev, $el) {
-          console.log($el);
+// console.log($el);
           var nodeId=$el.attr('nodeId');
-          console.log(nodeId);
+          var name = $el.attr('name');
+          this.nodeId = nodeId;
+// console.log(nodeId);
           var self = this;
           
           var url = this.options.config.urlMeasurements.replace('[nodeId]', nodeId);
+
+          self.textAssignments.text(name);
 
           self.buttonMeasurements.hide();
           self.measurementsBusy.show();
 
           var label = AD.lang.label.getLabel('[gatheringMeasurements]');
-          self.widget.find('.opstool-dashboard-measurementname').html(label);
+          self.statusUpdate(label);
 
           AD.comm.service.get({ url:url, params:{nodeId:nodeId}})
           .fail(function(err){
@@ -127,7 +151,7 @@ function(){
 
             // update with new text:
             var label = AD.lang.label.getLabel('[choose a measurement ...]');
-            self.widget.find('.opstool-dashboard-measurementname').html(label);
+            self.statusUpdate(label);
 
             self.buttonMeasurements.show();
             self.measurementsBusy.hide();
@@ -151,17 +175,97 @@ function(){
          *
          */
         measurementClicked:function(ev, $el) {
+            var self = this;
 
             // display chosen measurement name above graph
             var measurementName = $el.text();
             var measurementID = $el.attr('measurementId');
+            var nodeId = this.nodeId;
 
-            this.widget.find('.opstool-dashboard-measurementname').html('['+measurementID+'] '+ measurementName);
-            // show busy icon 
+            this.widget.find('.measurement-text').html(measurementName);
+
+            this.statusUpdate('['+measurementID+'] '+ measurementName+'<br> ... gathering information');
+            this.graphBusy.show();
+
             // call for report data
             // update chart when data returns
 
+            var url = this.options.config.urlGraph
+                        .replace('[nodeId]', nodeId)
+                        .replace('[measurementId]', measurementID);
+
+            AD.comm.service.get({ url:url})
+            .fail(function(err){
+                console.log('Failed in getting graphData for node:'+nodeId+'  url['+url+']');
+                console.log(err);
+            })
+            .then(function(report) {
+
+                console.log('... hey!  got some data:');
+                console.log(report.measurements);
+
+                // hide the status information.
+                self.widget.find('.opstool-dashboard-infoupdate').hide();
+                self.graphBusy.hide();
+
+
+                var data = [];
+                report.measurements.forEach(function(measurement) {
+
+                    // if we found the measurement we were asking about
+                    if (measurement.id == measurementID) {
+
+                        for (var p=0; p < report.periods.length; p++) {
+                            var value = measurement.values[p];
+                            if (value == '-') value = 0; // ??
+                            var entry = { month: report.periods[p], value:value};
+                            data.push(entry);
+                        } 
+
+                    }
+                })
+
+                self.widget.find(".graph-area").show();
+                self.graph.wijsparkline({data:data}).wijsparkline('redraw');
+                // self.widget.find(".gmaSparkline").wijsparkline({
+                //     data: data,
+                //     bind: "value",
+                //     tooltipContent: function(){
+                //             return this.month + ': ' +  this.value;
+                //     },
+                //     type: "area",
+                //     seriesStyles: [
+                //         {
+                //             fill: "#4381B8",
+                //             stroke: "#4381B8"
+                //         }
+                //     ]
+                // });
+
+            });
+
         },
+
+
+
+        /**
+         *  @function statusUpdate
+         *
+         *  display the given text in the status update field.
+         *
+         *  @param {string} text  the text to show in the status field
+         *
+         */
+        statusUpdate: function(text) {
+
+            this.widget.find('.opstool-dashboard-infoupdate').html(text).show();
+
+            // whenever we update the status, we hide the graph:
+            this.widget.find(".graph-area").hide();
+            this.graphBusy.hide();
+
+        },
+        
 
 
         '.assignment-item click': function ($el, ev) {
