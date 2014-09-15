@@ -1,6 +1,6 @@
 {
   "name": "opstool-dashboard",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "(plugin) A dashboard page for our Operations Portal.",
   "main": "module.js",
   "directories": {
@@ -23,6 +23,7 @@
   "homepage": "https://github.com/appdevdesigns/opstool-dashboard",
   "dependencies": {
     "ad-utils": "git://github.com/appdevdesigns/ad-utils",
+    "gma-api": "git://github.com/appdevdesigns/gma-api",
     "jquery-deferred": "^0.3.0"
   },
   "devDependencies": {

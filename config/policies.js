@@ -29,13 +29,16 @@ module.exports = {
 //       logout:true
 //    }
 
-	'opstool-dashboard/OpsdashboardController' : {
-		nsctobepaid: 	serviceStack,
-		nscpaid: 	 	serviceStack,
-		nscalreadypaid: serviceStack,
-		staffaccountinfo: serviceStack
+    'opstool-dashboard/OpsdashboardController' : {
+        nsctobepaid:    serviceStack,
+        nscpaid:        serviceStack,
+        nscalreadypaid: serviceStack,
+        staffaccountinfo: serviceStack,
+        gmaGraphAssignments: serviceStack,
+        gmaGraphMeasurements: serviceStack,
+        gmaGraphData: serviceStack
 
-	}
+    }
 
 
 };

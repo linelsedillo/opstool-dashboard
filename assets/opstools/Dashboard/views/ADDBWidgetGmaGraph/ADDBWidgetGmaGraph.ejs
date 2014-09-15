@@ -1,26 +1,34 @@
-<div class="panel panel-default gmaGraph-<%= id %>">
-    <div class="navbar">
+<%
+var L = function(key) {
+    return AD.lang.label.getLabelSpan(key);
+}
+%><div class="panel panel-default gmaGraph-<%= id %>">
+    <div class="navbar" style="margin-bottom: 0px;" >
         <div class="btn-group">
-          <button type="primary button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-            Assignments<span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu" role="menu">
+            <button type="primary button" class="btn opsportal-btn opsportal-btn-dk dropdown-toggle" data-toggle="dropdown">
+                <span class="assignment-text"><%== L('[Assignments]') %></span><span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
             <% assignments.forEach(function(assignment) { %>
-                <li class="assignment-item" nodeId="<%= assignment.nodeId %>"><a href="#"><%= assignment.shortName %></a></li>
+                <li class="assignment-item" nodeId="<%= assignment.nodeId %>" name="<%= assignment.shortName %>"><a href="#"><%= assignment.shortName %></a></li>
             <% }) %>
-          </ul>
+            </ul>
         </div>
-        <div class="btn-group">
-        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-          Measurements<span class="caret"></span>
-        </button>
-        <ul class="measurements-list dropdown-menu" role="menu">
-              <li>Choose Assignment.</li>          
-        </ul>
+        <div class="measurements-busy" style="float:right"></div>
+        <div class="button-measurements btn-group" style="float:right" >
+            <button type="button" class="btn opsportal-btn opsportal-btn-dk dropdown-toggle" data-toggle="dropdown">
+                <span class="measurement-text"><%== L('[Measurements]') %></span><span class="caret"></span>
+            </button>
+            <ul class="measurements-list dropdown-menu" role="menu">
+                <li><%== L('[Choose Assignment]') %></li>
+            </ul>
         </div>
-        <a class="ad-item-delete btn btn-default" style="float:right" href="#">Delete</a>
     </div>
-    <div class="panel-body">
-        <div class="well" >Content for ADDBWidgetGmaGraph</div>
+    <div class="panel-body" style="padding-top: 0px; padding-bottom: 0px;" >
+        <span class="opstool-dashboard-infoupdate"><%== L('[choose an assignment ...]') %></span>
+        <div class="graph-busy" style="float:right"></div>
+        <div class="graph-area" style="position: relative; margin: 0 auto;">
+            <div class="gmaSparkline" style="margin: 0 auto; height:100px;width:318px;"></div>
+        </div>
     </div>
 </div>

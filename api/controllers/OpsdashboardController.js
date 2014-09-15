@@ -20,7 +20,12 @@ module.exports = {
             // { id:'000001', title:'Title',  type:'table', config:{ url:'/url/here', fields:['field1', 'field2'] }},
             { id:'000002', title:'NSC: to be paid', type:'tableUpdateNSC', config:{ url:'/opsdashboard/nsctobepaid', url_paid:'/opsdashboard/nscpaid', fields:['staff_number', 'account_name']}},
             { id:'000003', title:'NSC: already paid', mode:'paid',  type:'tableUpdateNSC', config:{ url:'/opsdashboard/nscalreadypaid', fields:['staff_number', 'account_name']}},
-            { id:'000004', title:'Staff account info', type:'table', config:{ url:'/opsdashboard/staffaccountinfo', fields:['item', 'value']}}
+            { id:'000004', title:'Staff account info', type:'table', config:{ url:'/opsdashboard/staffaccountinfo', fields:['item', 'value']}},
+            { id:'000005', title:'GMA Measurement graph', type:'gmaGraph', config:{ 
+                urlAssignments:'/opsdashboard/gmaGraph/assignments', 
+                urlMeasurements:'/opsdashboard/gmaGraph/assignment/[nodeId]/measurements', 
+                urlGraph:'/opsdashboard/gmaGraph/assignment/[nodeId]/measurements/[measurementId]/graph', 
+                fields:['item', 'value']} }
         ]);
 
 
@@ -90,8 +95,15 @@ module.exports = {
 
             nscGUID = ADCore.user.current(req).GUID();
 // for testing:
+if (sails.config.opsdashboard) {
+    if (sails.config.opsdashboard.testing) {
+        if (sails.config.opsdashboard.testing.guid) {
+            nscGUID = sails.config.opsdashboard.testing.guid;
+        }
+    }
+}
 // nscGUID = 'vincent.tong';                           // from live data
-nscGUID = '1C15995E-E81C-BD83-2B48-DB0D93822F32';   // from our test data
+// nscGUID = '1C15995E-E81C-BD83-2B48-DB0D93822F32';   // from our test data
         }
 
         AD.log('... <yellow>dateStart:</yellow>'+dateStart);
@@ -108,8 +120,8 @@ nscGUID = '1C15995E-E81C-BD83-2B48-DB0D93822F32';   // from our test data
 
         $.when(foundPaid, foundStaff)
         .fail(function(err){
-            AD.log.error('... error gathering to be paid info:', err);
-            err.service_message = ' error gathering to be paid info: dateStart['+dateStart+'] dateEnd['+dateEnd+'] guid['+guid+']';
+            AD.log.error(' error gathering to be paid info:', err);
+            err.service_message = ' error gathering to be paid info: dateStart['+dateStart+'] dateEnd['+dateEnd+'] guid['+nscGUID+']';
             ADCore.comm.error(res, err, 500);
         })
         .then(function(allPaid, allStaff){
@@ -129,11 +141,13 @@ nscGUID = '1C15995E-E81C-BD83-2B48-DB0D93822F32';   // from our test data
                 if (typeof mapAllPaid[ren.ren_guid] == 'undefined') {
 
                     var primaryAccount = '??';
-                    ren.staffAccounts.forEach(function(account){
-                        if (account.account_isprimary == 1) {
-                            primaryAccount = account.account_number;
-                        }
-                    })
+                    if (ren.staffAccounts) {
+                        ren.staffAccounts.forEach(function(account){
+                            if (account.account_isprimary == 1) {
+                                primaryAccount = account.account_number;
+                            }
+                        })
+                    }
 
                     results.push({
                         ren_guid:ren.ren_guid,
@@ -194,7 +208,7 @@ nscGUID = '1C15995E-E81C-BD83-2B48-DB0D93822F32';   // from our test data
 
         NSCAlreadyPaid.create({ ren_guid:guid, staff_account:account, account_name:name, date_paid:datePaid})
         .fail(function(err){
-            AD.log.error('... error creating NSCAlreadyPaid :', err);
+            AD.log.error(' error creating NSCAlreadyPaid :', err);
 
             err.service_message = ' error creating already paid entry: guid['+guid+'] account['+account+'] name['+name+'] datePaid['+datePaid+']';
             ADCore.comm.error(res, err, 500);
@@ -241,6 +255,7 @@ nscGUID = '1C15995E-E81C-BD83-2B48-DB0D93822F32';   // from our test data
      */
     nscalreadypaid:function(req, res) {
 
+        AD.log();
         AD.log('<green>nscalreadypaid:</green> ');
 
         if (res.setHeader) {
@@ -278,8 +293,15 @@ nscGUID = '1C15995E-E81C-BD83-2B48-DB0D93822F32';   // from our test data
 
             nscGUID = ADCore.user.current(req).GUID();
 // for testing:
+if (sails.config.opsdashboard) {
+    if (sails.config.opsdashboard.testing) {
+        if (sails.config.opsdashboard.testing.guid) {
+            nscGUID = sails.config.opsdashboard.testing.guid;
+        }
+    }
+}
 // nscGUID = 'vincent.tong';                           // from live data
-nscGUID = '1C15995E-E81C-BD83-2B48-DB0D93822F32';   // from our test data
+// nscGUID = '1C15995E-E81C-BD83-2B48-DB0D93822F32';   // from our test data
         }
 
         AD.log('... <yellow>dateStart:</yellow>'+dateStart);
@@ -296,7 +318,7 @@ nscGUID = '1C15995E-E81C-BD83-2B48-DB0D93822F32';   // from our test data
 
         $.when(foundPaid, foundStaff)
         .fail(function(err){
-            AD.log.error('... error gathering already paid info:', err);
+            AD.log.error(' error gathering already paid info:', err);
             err.service_message = ' error gathering already paid info: dateStart['+dateStart+'] dateEnd['+dateEnd+'] guid['+guid+']';
             ADCore.comm.error(res, err, 500);
         })
@@ -317,11 +339,13 @@ nscGUID = '1C15995E-E81C-BD83-2B48-DB0D93822F32';   // from our test data
                 if (mapAllPaid[ren.ren_guid]) {
 
                     var primaryAccount = '??';
-                    ren.staffAccounts.forEach(function(account){
-                        if (account.account_isprimary == 1) {
-                            primaryAccount = account.account_number;
-                        }
-                    })
+                    if (ren.staffAccounts) {
+                        ren.staffAccounts.forEach(function(account){
+                            if (account.account_isprimary == 1) {
+                                primaryAccount = account.account_number;
+                            }
+                        })
+                    }
 
                     results.push({
                         ren_guid:ren.ren_guid,
@@ -366,7 +390,8 @@ nscGUID = '1C15995E-E81C-BD83-2B48-DB0D93822F32';   // from our test data
      *  }
      */
     staffaccountinfo:function(req, res){
-
+        AD.log();
+        AD.log('<green>staffaccountinfo:</green> ');
         // prepare response for json
         if (res.setHeader) {
             res.setHeader('content-type', 'application/javascript');
@@ -380,15 +405,23 @@ nscGUID = '1C15995E-E81C-BD83-2B48-DB0D93822F32';   // from our test data
 
             guid = ADCore.user.current(req).GUID();
 // for testing:
+if (sails.config.opsdashboard) {
+    if (sails.config.opsdashboard.testing) {
+        if (sails.config.opsdashboard.testing.guid) {
+            guid = sails.config.opsdashboard.testing.guid;
+        }
+    }
+}
 // guid = 'vincent.tong';                           // from live data
-guid = '1C15995E-E81C-BD83-2B48-DB0D93822F32';   // from our test data
+// guid = '1C15995E-E81C-BD83-2B48-DB0D93822F32';   // from our test data
         }
 
+        AD.log('... <yellow>guid:</yellow>'+guid);
 
         // NSStaffProcessor.compileStaffData()
         LegacyStewardwise.accountAnalysisByGUID({guids:[guid]})
         .fail(function(err){
-            AD.log.error('... error gathering accountAnalysisByGUID():', err);
+            AD.log.error(' error gathering accountAnalysisByGUID():', err);
             err.info_msg = 'error gathering account analysis for guid:'+guid;
             ADCore.comm.error(res, err, 500);
         })
@@ -413,11 +446,191 @@ guid = '1C15995E-E81C-BD83-2B48-DB0D93822F32';   // from our test data
                     { item:"% Local", value:foundRen.localPercent },
                     { item:"% Foreign", value:foundRen.foreignPercent }
                 ]
+                AD.log('... <yellow>results:</yellow>', results);
 
+
+                AD.log('... <green>comm.success()</green>');
                 ADCore.comm.success(res, results);
 
             }
         });
+
+    },
+
+
+
+    /**
+     *  @function gmaGraphAssignments
+     *
+     *  Return the GMA assignments that correspond to the currently 
+     *  authenticated user.
+     *
+     *
+     *  @return {json}
+     *  {
+     *      status: 'success',
+     *      data: [
+     *          {
+     *              {nodeId:1, shortName:'name1', role:'staff'},
+     *              {nodeId:2, shortName:'name2', role:'staff'},
+     *              ...
+     *              {nodeId:N, shortName:'nameN', role:'staff'},
+     *          }
+     *      ]
+     *  }
+     */
+    gmaGraphAssignments:function(req, res){
+        AD.log();
+        AD.log('<green>gmaGraphAssignments:</green> ');
+        // prepare response for json
+        if (res.setHeader) {
+            res.setHeader('content-type', 'application/javascript');
+        }
+
+//         var guid = req.param('guid');
+// // who is this list for?
+//         if (typeof guid == 'undefined') {
+// //// TODO:
+// //// verify this user has permission to actually lookup other staff account info:
+
+//             guid = ADCore.user.current(req).GUID();
+// // for testing:
+// guid = 'vincent.tong';                           // from live data
+// // guid = '1C15995E-E81C-BD83-2B48-DB0D93822F32';   // from our test data
+//         }
+
+
+        GMA.assignmentsForRequest({ req: req })
+        .fail(function(err){
+            AD.log.error(' encountered error from GMA.assignmentsForRequest() :', err);
+            AD.log('... <red>err.message:</red>'+ err.message);
+
+            // was this an Access Denied message?  if so respond with a 403:
+            if( err.message.indexOf('enied') != -1) {
+
+                // let's respond with a more meaningful Error:
+                var guid = ADCore.user.current(req).GUID();
+                var newErr = new Error('Access Denied: You ['+guid+'] do not have access to GMA.');
+                AD.log('... <red>com.error() 403</red>');
+                ADCore.comm.error(res, newErr, 403);
+
+            } else {
+
+                // I'm not sure what error this is:
+                AD.log('... <red>com.error() 500</red>');
+                ADCore.comm.error(res, err, 500);
+            }
+
+            
+        })
+        .done(function(assignments){
+            AD.log('... <green>comm.success()</green>');
+            ADCore.comm.success(res, assignments);
+        });
+
+
+    },
+
+
+
+    /**
+     *  @function gmaGraphMeasurements
+     *
+     *  Return the GMA measurements that correspond to the given nodeId.
+     *
+     *  @param  {integer} nodeId    the node id to pull measurements from.
+     *
+     *  @return {json}
+     *  {
+     *      status: 'success',
+     *      data: [
+     *          {
+     *              {reportId:1, measurementId:Id1, measurementName:'name1', measurementDescription:'desc1', measurementValue:val1, role:'staff'},
+     *              {reportId:2, measurementId:Id2, measurementName:'name2', measurementDescription:'desc2', measurementValue:val2, role:'staff'},
+     *              ...
+     *              {reportId:N, measurementId:IdN, measurementName:'nameN', measurementDescription:'descN', measurementValue:valN, role:'staff'},
+     *          }
+     *      ]
+     *  }
+     */
+    gmaGraphMeasurements:function(req, res){
+        AD.log();
+        AD.log('<green>gmaGraphMeasurements:</green> ');
+        // prepare response for json
+        if (res.setHeader) {
+            res.setHeader('content-type', 'application/javascript');
+        }
+
+        var nodeId = req.param('nodeId');
+
+
+        GMA.measurementsForRequest({ req: req, nodeId:nodeId })
+        .fail(function(err){
+            AD.log.error(' encountered error from GMA.assignmentsForRequest() :', err);
+            ADCore.comm.error(res, err, 500);
+        })
+        .done(function(measurements){
+
+            // each entry of measurements is an instance of the Measurement() obj.
+            // this causes problems when JSON.stringify() the array.
+
+            // so convert to a simple list of {json} objects:
+            var list = [];
+            measurements.forEach(function(entry){
+                list.push(entry.toJSON());
+            })
+
+            AD.log('... <green>comm.success()</green>');
+            AD.log(list);
+            ADCore.comm.success(res, list);
+        });
+
+
+    },
+
+
+
+    /**
+     *  @function gmaGraphData
+     *
+     *  Return the GMA historical data for the provided nodeId & measurementId.
+     *
+     *  @param  {integer} nodeId    the node id to pull measurements from.
+     *  @param  {integer} measurementId the measurement id to graph
+     *
+     *  @return {json}
+     *  {
+     *      status: 'success',
+     *      data: [
+     *          { }
+     *      ]
+     *  }
+     */
+    gmaGraphData:function(req, res){
+        AD.log();
+        AD.log('<green>gmaGraphData:</green> ');
+        // prepare response for json
+        if (res.setHeader) {
+            res.setHeader('content-type', 'application/javascript');
+        }
+
+        var nodeId = req.param('nodeId');
+        var measurementId = req.param('measurementId');
+        AD.log('... <green>nodeId:</green>'+nodeId);
+        AD.log('... <green>measurementId:</green>'+measurementId);
+
+        GMA.graphDataForRequest({ req: req, nodeId:nodeId, measurements:[measurementId] })
+        .fail(function(err){
+            AD.log.error(' encountered error from GMA.graphDataForRequest() :', err);
+            ADCore.comm.error(res, err, 500);
+        })
+        .done(function(list){
+
+            AD.log('... <green>comm.success()</green>');
+            AD.log(list);
+            ADCore.comm.success(res, list);
+        });
+
 
     }
 
