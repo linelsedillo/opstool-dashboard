@@ -632,6 +632,71 @@ if (sails.config.opsdashboard) {
         });
 
 
+    },
+
+
+
+    /**
+     *  @function staffSearch
+     *
+     *  Request a list of possible staff according that match the given filter.
+     *
+     *  @param  {string} filter    the filter typed in by the user.
+     *
+     *  @return {json}
+     *  {
+     *      status: 'success',
+     *      data: [
+     *          { match:'Fury, Nick', guid:'headHoncho' },
+     *          { match:'Turner Ted', guid:'t.turner' },
+     *          { match:'Smith, Purcy', guid:'p.smith' }
+     *      ]
+     *  }
+     */
+    staffSearch:function(req, res) {
+
+        AD.log();
+        AD.log('<green>staffSearch:</green> ');
+
+        // prepare response for json
+        if (res.setHeader) {
+            res.setHeader('content-type', 'application/javascript');
+        }
+
+        var filter = req.param('filter');
+        AD.log('... filter:'+filter);
+
+
+        // for now, send back these results for UI development
+        ADCore.comm.success(res, [
+            { match:'Fury, Nick', guid:'headHoncho' },
+            { match:'Turner Ted', guid:'t.turner' },
+            { match:'Smith, Purcy', guid:'p.smith' }
+        ]);
+        
+    },
+
+
+    staffInfo:function(req, res) {
+
+        AD.log();
+        AD.log('<green>gmaGraphData:</green> ');
+        // prepare response for json
+        if (res.setHeader) {
+            res.setHeader('content-type', 'application/javascript');
+        }
+
+        var selectedGUID = req.param('guid');
+        AD.log('... guid:'+selectedGUID);
+
+        // for now, send back Nick Fury for UI development
+        ADCore.comm.success(res, {
+            surname:'Fury',
+            givenname:'Nick',
+            phone:'0123456789',
+            email:'nick.fury@triscelon.org'
+        });
+        
     }
 
     
