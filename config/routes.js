@@ -33,8 +33,8 @@ module.exports = {
     'get /opsdashboard/gmaGraph/assignments': 'opstool-dashboard/OpsdashboardController.gmaGraphAssignments',
     'get /opsdashboard/gmaGraph/assignment/:nodeId/measurements': 'opstool-dashboard/OpsdashboardController.gmaGraphMeasurements',
     'get /opsdashboard/gmaGraph/assignment/:nodeId/measurements/:measurementId/graph': 'opstool-dashboard/OpsdashboardController.gmaGraphData',
-'get /opsdashboard/stafflookup/search/:filter': 'opstool-dashboard/OpsdashboardController.staffSearch',
-'get /opsdashboard/stafflookup/contactinfo/:guid': 'opstool-dashboard/OpsdashboardController.staffInfo'
+    'get /opsdashboard/stafflookup/search/:filter': 'opstool-dashboard/OpsdashboardController.staffSearch',
+    'get /opsdashboard/stafflookup/contactinfo/:guid': 'opstool-dashboard/OpsdashboardController.staffInfo'
 
 };
 

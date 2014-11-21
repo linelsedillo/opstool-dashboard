@@ -2,10 +2,8 @@
 steal(
         // List your Controller's dependencies here:
         'appdev',
-        '/opstools/Dashboard/controllers/ADDBWidget.js',
-//        'opstools/Dashboard/models/Projects.js',
-//        'appdev/widgets/ad_delete_ios/ad_delete_ios.js',
-//        'opstools/Dashboard/views/ADDBWidgetTableNSCUpdate/ADDBWidgetTableNSCUpdate.ejs',
+        'opstools/Dashboard/controllers/ADDBWidget.js',
+        '//opstools/Dashboard/views/ADDBWidgetTableNSCUpdate/Table.ejs',
 function(){
 
     // Namespacing conventions:
@@ -19,7 +17,7 @@ function(){
             var self = this;
             options = AD.defaults({
                     mode:'notPaid',
-                    templateTable: '//opstools/Dashboard/views/ADDBWidgetTableNSCUpdate/Table.ejs',
+                    templateTable: '//opstools/Dashboard/views/ADDBWidgetTableNSCUpdate/Table.ejs'
             }, options);
             this.options = options;
 
@@ -165,7 +163,7 @@ console.log(err);
         '.ad-item-add click': function ($el, ev) {
 
             ev.preventDefault();
-        },
+        }
 
 
     });

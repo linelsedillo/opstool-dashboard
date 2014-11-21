@@ -2,9 +2,8 @@
 steal(
         // List your Controller's dependencies here:
         'appdev',
-//        'opstools/Dashboard/models/Projects.js',
-//        'appdev/widgets/ad_delete_ios/ad_delete_ios.js',
-//        'opstools/Dashboard/views/ADDBWidget/ADDBWidget.ejs',
+        'appdev/widgets/ad_icon_busy',
+        '//opstools/Dashboard/views/ADDBWidget/ADDBWidget.ejs',
 function(){
 
     // Namespacing conventions:
@@ -99,7 +98,7 @@ function(){
         '.ad-item-add click': function ($el, ev) {
 
             ev.preventDefault();
-        },
+        }
 
 
     });
