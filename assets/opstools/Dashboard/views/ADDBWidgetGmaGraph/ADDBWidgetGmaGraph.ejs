@@ -4,11 +4,11 @@ var L = function(key) {
 }
 %><div class="panel panel-default gmaGraph-<%= id %>">
     <div class="navbar" style="margin-bottom: 0px;" >
-        <div class="btn-group">
+        <div class="button-assignments btn-group">
             <button type="primary button" class="btn opsportal-btn opsportal-btn-dk dropdown-toggle" data-toggle="dropdown">
                 <span class="assignment-text"><%== L('[Assignments]') %></span><span class="caret"></span>
             </button>
-            <ul class="dropdown-menu" role="menu">
+            <ul class="list-assignments dropdown-menu" role="menu">
             <% assignments.forEach(function(assignment) { %>
                 <li class="assignment-item" nodeId="<%= assignment.nodeId %>" name="<%= assignment.shortName %>"><a href="#"><%= assignment.shortName %></a></li>
             <% }) %>
@@ -19,7 +19,7 @@ var L = function(key) {
             <button type="button" class="btn opsportal-btn opsportal-btn-dk dropdown-toggle" data-toggle="dropdown">
                 <span class="measurement-text"><%== L('[Measurements]') %></span><span class="caret"></span>
             </button>
-            <ul class="measurements-list dropdown-menu" role="menu">
+            <ul class="list-measurements dropdown-menu" role="menu">
                 <li><%== L('[Choose Assignment]') %></li>
             </ul>
         </div>

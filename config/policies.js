@@ -11,7 +11,7 @@
  * http://sailsjs.org/#documentation
  */
 
-var serviceStack = [ 'sessionAuth', 'initUser' ];
+var serviceStack = [ 'sessionAuth', 'initUser', 'initSession' ];
 
 module.exports = {
 

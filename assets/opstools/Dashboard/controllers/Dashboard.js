@@ -2,25 +2,24 @@
 steal(
         // List your Controller's dependencies here:
         'appdev',
-        '/opstools/Dashboard/controllers/WidgetList.js',
+        'opstools/Dashboard/controllers/WidgetList.js',
 
-        '/js/sDashboard/sDashboard.css',
-        '/js/datatables/media/js/jquery.dataTables.min.js',
-        '/js/Flotr2/flotr2.min.js'
+        'js/sDashboard/sDashboard.css',
+        'js/datatables/media/js/jquery.dataTables.min.js',
+        'js/Flotr2/flotr2.min.js'
 
-).then(
-        '/js/sDashboard/jquery-sDashboard.js',
-        '/opstools/Dashboard/dashboard.css',
+)
+.then(
+        'js/sDashboard/jquery-sDashboard.js',
+        'opstools/Dashboard/dashboard.css',
+        'OpsPortal/classes/OpsTool.js',
 
-//        'appdev/widgets/ad_delete_ios/ad_delete_ios.js',
-//        '/opstools/Dashboard/views/Dashboard/Dashboard.ejs',
+        '//opstools/Dashboard/views/Dashboard/Dashboard.ejs',
+        '//opstools/Dashboard/views/Dashboard/Mockup.ejs',
 function(){
 
-    // OpsTool Namespacing conventions:
-    // AD.controllers.opstools.[application].Tool
-    if (typeof AD.controllers.opstools == 'undefined') AD.controllers.opstools = {};
-    if (typeof AD.controllers.opstools.Dashboard == 'undefined') AD.controllers.opstools.Dashboard = {};
-    AD.controllers.opstools.Dashboard.Tool = AD.classes.opsportal.OpsTool.extend({
+
+    AD.Control.OpsTool.extend('Dashboard', {
 
 
         init: function (element, options) {
@@ -96,7 +95,7 @@ function(){
         '.ad-item-add click': function ($el, ev) {
 
             ev.preventDefault();
-        },
+        }
 
 
     });

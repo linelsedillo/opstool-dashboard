@@ -2,11 +2,11 @@
 steal(
         // List your Controller's dependencies here:
         'appdev',
-        '/opstools/Dashboard/controllers/ADDBWidgetTable.js',
-        '/opstools/Dashboard/controllers/ADDBWidgetTableNSCUpdate.js',
-        '/opstools/Dashboard/controllers/ADDBWidgetGmaGraph.js',
-//        'appdev/widgets/ad_delete_ios/ad_delete_ios.js',
-//        'opstools/Dashboard/views/WidgetList/WidgetList.ejs',
+        'opstools/Dashboard/controllers/ADDBWidgetTable.js',
+        'opstools/Dashboard/controllers/ADDBWidgetTableNSCUpdate.js',
+        'opstools/Dashboard/controllers/ADDBWidgetGmaGraph.js',
+        '//opstools/Dashboard/views/WidgetList/WidgetList.ejs',
+        '//opstools/Dashboard/views/WidgetList/WidgetDiv.ejs',
 function(){
 
 
@@ -24,7 +24,7 @@ function(){
     if (typeof AD.controllers.opstools == 'undefined') AD.controllers.opstools = {};
     if (typeof AD.controllers.opstools.Dashboard == 'undefined') AD.controllers.opstools.Dashboard = {};
     AD.controllers.opstools.Dashboard.WidgetList = AD.classes.UIController.extend({
-
+    // AD.Control.extend('Dashboard.WidgetList', {
 
         init: function (element, options) {
             var self = this;
@@ -106,7 +106,7 @@ console.log(err);
         '.ad-item-add click': function ($el, ev) {
 
             ev.preventDefault();
-        },
+        }
 
 
     });

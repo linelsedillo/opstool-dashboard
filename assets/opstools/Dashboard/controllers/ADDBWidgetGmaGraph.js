@@ -3,9 +3,9 @@ steal(
         // List your Controller's dependencies here:
         'appdev',
         'opstools/Dashboard/controllers/ADDBWidget.js',
-//        'opstools/Dashboard/models/Projects.js',
-//        'appdev/widgets/ad_delete_ios/ad_delete_ios.js',
-//        'opstools/Dashboard/views/ADDBWidgetGmaGraph/ADDBWidgetGmaGraph.ejs',
+        '//opstools/Dashboard/views/ADDBWidgetGmaGraph/ADDBWidgetGmaGraph.ejs',
+        '//opstools/Dashboard/views/ADDBWidgetGmaGraph/assignment-item.ejs',
+        '//opstools/Dashboard/views/ADDBWidgetGmaGraph/measurement-item.ejs',
 function(){
 
     // Namespacing conventions:
@@ -19,6 +19,7 @@ function(){
             var self = this;
             options = AD.defaults({
                     templateDOM: '//opstools/Dashboard/views/ADDBWidgetGmaGraph/ADDBWidgetGmaGraph.ejs',
+                    templateAssignmentItem: '//opstools/Dashboard/views/ADDBWidgetGmaGraph/assignment-item.ejs',
                     templateMeasurementItem: '//opstools/Dashboard/views/ADDBWidgetGmaGraph/measurement-item.ejs'
             }, options);
             this.options = options;
@@ -35,7 +36,117 @@ function(){
 
             this.nodeId = null;
 
+            // listen for any GMA Assignment updates  and refresh our list  
+            AD.comm.socket.subscribe('gma_user_assignments', function(key, data) {
+                self.updateAssignments(data.assignments);
+            })
+
+
+            // listen for any GMA Measurement updates  and refresh our list  
+            AD.comm.socket.subscribe('gma_assignment_measurements', function(key, data) {
+                if (data.nodeId == self.nodeId) {
+                    self.updateMeasurements(data.measurements);
+                }
+            })
+
+
+            // listen for any GMA Report updates  and refresh our graph  
+            AD.comm.socket.subscribe('gma_report', function(key, data) {
+                if (data.nodeId == self.nodeId) {
+                    self.updateReport(data.measurements);
+                }
+            })
+
         },
+
+        updateAssignments:function(assignments) {
+            var self = this;
+            var list = this.widget.find('.list-assignments');
+
+            // remove the existing entries
+            list.find('li').remove();
+
+            // add the new ones ...
+            assignments.forEach(function(assignment) {
+              list.append(can.view(self.options.templateAssignmentItem, { assignment:assignment } ));
+              
+            });
+
+            list.find('li').click(function(ev){
+
+                self.assignmentClicked(ev, $(this));
+            });
+        },
+
+
+
+        updateMeasurements:function(measurements) {
+            var self = this;
+            
+
+            var measurementsList = self.widget.find('.list-measurements');
+
+            // remove the existing entries
+            measurementsList.find('li').remove();
+
+            // add the new ones ...
+            measurements.forEach(function(measurement) {
+              measurementsList.append(can.view(self.options.templateMeasurementItem, {measurement:measurement } ));
+              
+            });
+
+            measurementsList.find('li').click(function(ev){
+
+                self.measurementClicked(ev, $(this));
+            });
+        },
+
+
+
+        updateReport:function(report) {
+            var self = this;
+            
+
+            // hide the status information.
+            self.widget.find('.opstool-dashboard-infoupdate').hide();
+            self.graphBusy.hide();
+
+
+            var data = [];
+            report.measurements.forEach(function(measurement) {
+
+                // if we found the measurement we were asking about
+                if (measurement.id == self.measurementID) {
+
+                    for (var p=0; p < report.periods.length; p++) {
+                        var value = measurement.values[p];
+                        if (value == '-') value = 0; // ??
+                        var entry = { month: report.periods[p], value:value};
+                        data.push(entry);
+                    } 
+
+                }
+            })
+
+            self.widget.find(".graph-area").show();
+            self.graph.wijsparkline({data:data}).wijsparkline('redraw');
+            // self.widget.find(".gmaSparkline").wijsparkline({
+            //     data: data,
+            //     bind: "value",
+            //     tooltipContent: function(){
+            //             return this.month + ': ' +  this.value;
+            //     },
+            //     type: "area",
+            //     seriesStyles: [
+            //         {
+            //             fill: "#4381B8",
+            //             stroke: "#4381B8"
+            //         }
+            //     ]
+            // });
+        },
+
+
 
         refreshData:function(){
             var self = this;
@@ -132,21 +243,9 @@ function(){
             console.log(err);
           })
           .then(function(measurements) {
-            var measurementsList = self.widget.find('.measurements-list');
 
-            // remove the existing entries
-            measurementsList.find('li').remove();
 
-            // add the new ones ...
-            measurements.forEach(function(measurement) {
-              measurementsList.append(can.view(self.options.templateMeasurementItem, {measurement:measurement } ));
-              
-            });
-
-            measurementsList.find('li').click(function(ev){
-
-                self.measurementClicked(ev, $(this));
-            });
+            self.updateMeasurements(measurements);
 
 
             // update with new text:
@@ -179,12 +278,12 @@ function(){
 
             // display chosen measurement name above graph
             var measurementName = $el.text();
-            var measurementID = $el.attr('measurementId');
+            this.measurementID = $el.attr('measurementId');
             var nodeId = this.nodeId;
 
             this.widget.find('.measurement-text').html(measurementName);
 
-            this.statusUpdate('['+measurementID+'] '+ measurementName+'<br> ... gathering information');
+            this.statusUpdate('['+this.measurementID+'] '+ measurementName+'<br> ... gathering information');
             this.graphBusy.show();
 
             // call for report data
@@ -192,7 +291,7 @@ function(){
 
             var url = this.options.config.urlGraph
                         .replace('[nodeId]', nodeId)
-                        .replace('[measurementId]', measurementID);
+                        .replace('[measurementId]', this.measurementID);
 
             AD.comm.service.get({ url:url})
             .fail(function(err){
@@ -204,43 +303,8 @@ function(){
                 console.log('... hey!  got some data:');
                 console.log(report.measurements);
 
-                // hide the status information.
-                self.widget.find('.opstool-dashboard-infoupdate').hide();
-                self.graphBusy.hide();
+                self.updateReport(report);
 
-
-                var data = [];
-                report.measurements.forEach(function(measurement) {
-
-                    // if we found the measurement we were asking about
-                    if (measurement.id == measurementID) {
-
-                        for (var p=0; p < report.periods.length; p++) {
-                            var value = measurement.values[p];
-                            if (value == '-') value = 0; // ??
-                            var entry = { month: report.periods[p], value:value};
-                            data.push(entry);
-                        } 
-
-                    }
-                })
-
-                self.widget.find(".graph-area").show();
-                self.graph.wijsparkline({data:data}).wijsparkline('redraw');
-                // self.widget.find(".gmaSparkline").wijsparkline({
-                //     data: data,
-                //     bind: "value",
-                //     tooltipContent: function(){
-                //             return this.month + ': ' +  this.value;
-                //     },
-                //     type: "area",
-                //     seriesStyles: [
-                //         {
-                //             fill: "#4381B8",
-                //             stroke: "#4381B8"
-                //         }
-                //     ]
-                // });
 
             });
 
@@ -272,7 +336,7 @@ function(){
             console.log("li clicked");
           
             ev.preventDefault();
-        },
+        }
 
 
     });

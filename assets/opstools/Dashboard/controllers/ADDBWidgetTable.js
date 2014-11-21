@@ -2,10 +2,8 @@
 steal(
         // List your Controller's dependencies here:
         'appdev',
-        '/opstools/Dashboard/controllers/ADDBWidget.js',
-//        'opstools/Dashboard/models/Projects.js',
-//        'appdev/widgets/ad_delete_ios/ad_delete_ios.js',
-//        'opstools/Dashboard/views/ADDBWidgetTable/ADDBWidgetTable.ejs',
+        'opstools/Dashboard/controllers/ADDBWidget.js',
+        '//opstools/Dashboard/views/ADDBWidgetTable/ADDBWidgetTable.ejs',
 function(){
 
     // Namespacing conventions:
@@ -18,7 +16,7 @@ function(){
         init: function (element, options) {
             var self = this;
             options = AD.defaults({
-                    templateDOM: '//opstools/Dashboard/views/ADDBWidgetTable/ADDBWidgetTable.ejs',
+                    templateDOM: '//opstools/Dashboard/views/ADDBWidgetTable/ADDBWidgetTable.ejs'
             }, options);
             this.options = options;
 
@@ -131,7 +129,7 @@ console.log(err);
         '.ad-item-add click': function ($el, ev) {
 
             ev.preventDefault();
-        },
+        }
 
 
     });
