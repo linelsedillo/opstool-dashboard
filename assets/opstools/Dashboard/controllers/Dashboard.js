@@ -2,31 +2,38 @@
 steal(
         // List your Controller's dependencies here:
         'appdev',
-        'opstools/Dashboard/controllers/WidgetList.js',
+        '/opstools/Dashboard/controllers/WidgetList.js',
 
-        'js/sDashboard/sDashboard.css',
-        'js/datatables/media/js/jquery.dataTables.min.js',
-        'js/Flotr2/flotr2.min.js'
+        '/js/sDashboard/sDashboard.css',
+        '/js/datatables/media/js/jquery.dataTables.min.js',
+        '/js/Flotr2/flotr2.min.js'
 
-)
-.then(
-        'js/sDashboard/jquery-sDashboard.js',
-        'opstools/Dashboard/dashboard.css',
-        'OpsPortal/classes/OpsTool.js',
+).then(
+        '/js/sDashboard/jquery-sDashboard.js',
+		'/opstools/Dashboard/js/jquery-1.11.1.min.js',
+		'/opstools/Dashboard/js/jquery.gridster.js',
+		'/opstools/Dashboard/js/jquery-ui.js',
+		'/opstools/Dashboard/js/dragNdrop.js',
+		'/opstools/Dashboard/js/data-tables.js',
+		'/opstools/Dashboard/js/jquery.dataTables.js',
+		'/opstools/Dashboard/js/d3.js',		
+		'/opstools/Dashboard/js/d4.js',	
 
-        '//opstools/Dashboard/views/Dashboard/Dashboard.ejs',
-        '//opstools/Dashboard/views/Dashboard/Mockup.ejs',
+//        'appdev/widgets/ad_delete_ios/ad_delete_ios.js',
+//        '/opstools/Dashboard/views/Dashboard/Dashboard.ejs',
 function(){
 
-
-    AD.Control.OpsTool.extend('Dashboard', {
+    // OpsTool Namespacing conventions:
+    // AD.controllers.opstools.[application].Tool
+    if (typeof AD.controllers.opstools == 'undefined') AD.controllers.opstools = {};
+    if (typeof AD.controllers.opstools.Dashboard == 'undefined') AD.controllers.opstools.Dashboard = {};
+    AD.controllers.opstools.Dashboard.Tool = AD.classes.opsportal.OpsTool.extend({
 
 
         init: function (element, options) {
             var self = this;
             options = AD.defaults({
                     templateDOM: '//opstools/Dashboard/views/Dashboard/Dashboard.ejs',
-                    templateMock: '//opstools/Dashboard/views/Dashboard/Mockup.ejs',
                     resize_notification: 'Dashboard.resize',
                     tool:null   // the parent opsPortal Tool() object
             }, options);
@@ -40,10 +47,6 @@ function(){
 
             this.initDOM();
 
-
-            this.element.find('.ot-dashboard-button-mockup').click(function(){
-                self.showMockup();
-            })
 
             AD.comm.hub.subscribe('opsDashboard.widget.add', function(tag, data){
                 self.addWidget(data.definition);
@@ -86,16 +89,11 @@ function(){
         },
 
 
-        showMockup:function() {
-            this.element.html(can.view(this.options.templateMock, {} ));
-        },
-
-
 
         '.ad-item-add click': function ($el, ev) {
 
             ev.preventDefault();
-        }
+        },
 
 
     });
